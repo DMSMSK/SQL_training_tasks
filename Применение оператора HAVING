@@ -1,0 +1,17 @@
+/*
+Задание:
+Посчитайте пропуски в поле с почтовым индексом billing_postal_code для каждой страны (поле billing_country). 
+Получите срез: в таблицу должны войти только те записи, в которых поле billing_address не содержит слов Street, Way, Road или Drive. 
+Отобразите в таблице страну и число пропусков, если их больше 10.
+*/
+
+SELECT billing_country,
+       COUNT(*)
+FROM invoice
+WHERE (billing_address NOT LIKE '%Street%' 
+      OR billing_address NOT LIKE '%Way%' 
+      OR billing_address NOT LIKE '%Road%'
+      OR billing_address NOT LIKE '%Drive%')
+      AND billing_postal_code IS NULL
+GROUP BY billing_country
+HAVING COUNT(*) > 10;
