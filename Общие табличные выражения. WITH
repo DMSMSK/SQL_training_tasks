@@ -1,0 +1,29 @@
+/*
+Задание:
+Проанализируйте данные из таблицы invoice за 2012 и 2013 годы. В итоговую таблицу должны войти поля:
+month — номер месяца;
+sum_total_2012 — выручка за этот месяц в 2012 году;
+sum_total_2013 — выручка за этот месяц в 2013 году;
+perc — процент, который отображает, насколько изменилась месячная выручка в 2013 году по сравнению с 2012 годом.
+Округлите значение в поле perc до ближайшего целого числа. Отсортируйте таблицу по значению в поле month от меньшего к большему.
+*/
+
+WITH year_2012 AS
+  (SELECT EXTRACT(MONTH FROM CAST(invoice_date AS DATE)) AS MONTH,
+          SUM(total)
+   FROM invoice
+   WHERE EXTRACT(YEAR FROM CAST(invoice_date AS DATE)) = 2012
+   GROUP BY MONTH),
+     year_2013 AS
+  (SELECT EXTRACT(MONTH FROM CAST(invoice_date AS DATE)) AS MONTH,
+          SUM(total)
+   FROM invoice
+   WHERE EXTRACT(YEAR FROM CAST(invoice_date AS DATE)) = 2013
+   GROUP BY MONTH)
+SELECT year_2012.MONTH AS MONTH,
+       year_2012.SUM AS sum_total_2012,
+       year_2013.SUM AS sum_total_2013,
+       ROUND((year_2013.SUM - year_2012.SUM) / year_2012.SUM * 100) AS perc
+FROM year_2012
+LEFT OUTER JOIN year_2013 ON year_2012.MONTH = year_2013.MONTH
+ORDER BY year_2012.MONTH;
